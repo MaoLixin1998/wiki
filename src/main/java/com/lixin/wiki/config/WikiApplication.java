@@ -1,14 +1,17 @@
-package com.lixin.wiki;
+package com.lixin.wiki.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 
 /**
  * @author mao
  */
+//@ComponentScan({"com.lixin", "com.test"})
+@ComponentScan("com.lixin")
 @SpringBootApplication
 public class WikiApplication {
 
