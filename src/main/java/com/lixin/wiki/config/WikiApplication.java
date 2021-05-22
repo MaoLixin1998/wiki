@@ -1,5 +1,6 @@
 package com.lixin.wiki.config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -13,6 +14,7 @@ import org.springframework.core.env.Environment;
 //@ComponentScan({"com.lixin", "com.test"})
 @ComponentScan("com.lixin")
 @SpringBootApplication
+@MapperScan("com.lixin.wiki.mapper")
 public class WikiApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger(WikiApplication.class);
