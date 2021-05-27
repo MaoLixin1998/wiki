@@ -6,6 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+/**
+ * @author mao
+ */
 public interface DemoMapper {
     long countByExample(DemoExample example);
 
