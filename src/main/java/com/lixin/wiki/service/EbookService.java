@@ -1,11 +1,13 @@
 package com.lixin.wiki.service;
+
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.lixin.wiki.domain.Ebook;
 import com.lixin.wiki.domain.EbookExample;
 import com.lixin.wiki.mapper.EbookMapper;
-import com.lixin.wiki.req.EbookReq;
-import com.lixin.wiki.resp.EbookResp;
+import com.lixin.wiki.req.EbookQueryReq;
+import com.lixin.wiki.req.EbookSaveReq;
+import com.lixin.wiki.resp.EbookQueryResp;
 import com.lixin.wiki.resp.PageResp;
 import com.lixin.wiki.util.CopyUtil;
 import org.slf4j.Logger;
@@ -27,19 +29,19 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public PageResp<EbookResp> list(EbookReq req){
+    public PageResp<EbookQueryResp> list(EbookQueryReq req) {
 
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
-        if(!ObjectUtils.isEmpty(req.getName())){
-            criteria.andNameLike("%"+req.getName()+"%");
+        if (!ObjectUtils.isEmpty(req.getName())) {
+            criteria.andNameLike("%" + req.getName() + "%");
         }
-        PageHelper.startPage(req.getPage(),req.getSize());
+        PageHelper.startPage(req.getPage(), req.getSize());
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
-        LOG.info( "总行数：{}",pageInfo.getTotal());
-        LOG.info( "总页数：{}",pageInfo.getPages());
+        LOG.info("总行数：{}", pageInfo.getTotal());
+        LOG.info("总页数：{}", pageInfo.getPages());
 
 
 //        for (Ebook ebook : ebookList) {
@@ -50,14 +52,29 @@ public class EbookService {
 //        EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);
 //        }
 
-        List<EbookResp> respList = new ArrayList<>();
+        List<EbookQueryResp> respList = new ArrayList<>();
         //列表负责
-        respList = CopyUtil.copyList(ebookList, EbookResp.class);
-        PageResp<EbookResp> pageResp = new PageResp<>();
+        respList = CopyUtil.copyList(ebookList, EbookQueryResp.class);
+        PageResp<EbookQueryResp> pageResp = new PageResp<>();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(respList);
 
         return pageResp;
     }
 
+    /**
+     * 保存
+     *
+     * @param req
+     */
+    public void save(EbookSaveReq req) {
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);
+        if (ObjectUtils.isEmpty(req.getId())) {
+            //新增
+            ebookMapper.insert(ebook);
+        } else {
+            //更新
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
+    }
 }
