@@ -1,15 +1,15 @@
 package com.lixin.wiki.controller;
 
-import com.lixin.wiki.req.EbookReq;
+import com.lixin.wiki.req.EbookQueryReq;
+import com.lixin.wiki.req.EbookSaveReq;
 import com.lixin.wiki.resp.CommonResp;
-import com.lixin.wiki.resp.EbookResp;
+import com.lixin.wiki.resp.EbookQueryResp;
+import com.lixin.wiki.resp.PageResp;
 import com.lixin.wiki.service.EbookService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
+import javax.validation.Valid;
 
 /**
  * @author mao
@@ -21,10 +21,25 @@ public class EbookController {
     private EbookService ebookService;
 
     @GetMapping("/list")
-    public CommonResp list(EbookReq req){
-        CommonResp<List<EbookResp>> resp = new CommonResp<>();
-        List<EbookResp> list = ebookService.list(req);
+    public CommonResp list(@Valid EbookQueryReq req){
+        CommonResp<PageResp<EbookQueryResp>> resp = new CommonResp<>();
+        PageResp<EbookQueryResp> list = ebookService.list(req);
         resp.setContent(list);
+        return resp;
+    }
+
+
+    @PostMapping("/save")
+    public CommonResp save(@Valid @RequestBody EbookSaveReq req){
+        CommonResp resp = new CommonResp<>();
+        ebookService.save(req);
+        return resp;
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public CommonResp delete(@PathVariable Long id){
+        CommonResp resp = new CommonResp<>();
+        ebookService.delete(id);
         return resp;
     }
 }
