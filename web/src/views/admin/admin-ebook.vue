@@ -34,7 +34,6 @@
       @ok="handleModalOk"
   >
     <a-form :model="ebook" :label-col="{span: 6}" :wrapper-col="{span: 18}">
-      <
       <a-form-item label="封面">
         <a-input v-model:value="ebook.cover"/>
       </a-form-item>
