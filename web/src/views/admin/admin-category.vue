@@ -68,7 +68,7 @@
             无
           </a-select-option>
           <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
-            {{c.name}}
+            {{ c.name }}
           </a-select-option>
         </a-select>
       </a-form-item>
@@ -134,6 +134,8 @@ export default defineComponent({
      **/
     const handleQuery = () => {
       loading.value = true;
+      //如果不清空现有数据，则编辑保存重新加载数据后，再点编辑,则显示原数据
+      level1.value = [];
       axios.get("/category/all").then((response) => {
         loading.value = false;
         const data = response.data;
