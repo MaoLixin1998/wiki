@@ -39,7 +39,9 @@
             </template>
             <a-list-item-meta :description="item.description">
               <template #title>
-                <a :href="item.href">{{ item.name }}</a>
+                <router-link :to="'doc?ebookId=' + item.id">
+                  {{ item.name }}
+                </router-link>
               </template>
               <template #avatar>
                 <a-avatar :src="item.cover"/>
@@ -103,7 +105,7 @@ export default defineComponent({
     const isShowWelcome = ref(true);
     let categoryId2 = 0;
 
-    const handleQueryEbook = () =>{
+    const handleQueryEbook = () => {
       axios.get("/ebook/list", {
         params: {
           page: 1,
