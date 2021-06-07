@@ -69,9 +69,10 @@ public class DocService {
         return pageResp;
     }
 
-    public List<DocQueryResp> all() {
+    public List<DocQueryResp> all(Long ebookId) {
 
         DocExample docExample = new DocExample();
+        docExample.createCriteria().andEbookIdEqualTo(ebookId);
         docExample.setOrderByClause("sort asc");
         List<Doc> docList = docMapper.selectByExample(docExample);
         List<DocQueryResp> respList = new ArrayList<>();
