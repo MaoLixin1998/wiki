@@ -60,6 +60,17 @@
       </a-form-item>
       <a-form-item label="父分类">
         <a-input v-model:value="category.parent"/>
+        <a-select
+            v-model:value="category.parent"
+            ref="select"
+        >
+          <a-select-option value="0">
+            无
+          </a-select-option>
+          <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
+            {{c.name}}
+          </a-select-option>
+        </a-select>
       </a-form-item>
       <a-form-item label="顺序">
         <a-input v-model:value="category.sort"/>
@@ -116,7 +127,7 @@ export default defineComponent({
      * }]
      *
      **/
-     const level1 = ref();
+    const level1 = ref();
 
     /**
      * 数据查询
@@ -129,10 +140,10 @@ export default defineComponent({
         if (data.success) {
           categorys.value = data.content;
 
-          console.log("原始数据：",categorys.value);
+          console.log("原始数据：", categorys.value);
           level1.value = [];
-          level1.value = Tool.array2Tree(categorys.value,0);
-          console.log("树形结构：",level1)
+          level1.value = Tool.array2Tree(categorys.value, 0);
+          console.log("树形结构：", level1)
 
         } else {
           message.error(data.message);
