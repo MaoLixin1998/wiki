@@ -30,7 +30,7 @@
               :defaultExpandAllRows="true"
           >
             <template #name="{ text, record }">
-              {{record.sort}} {{text}}
+              {{ record.sort }} {{ text }}
             </template>
             <template v-slot:action="{ text, record }">
               <a-space size="small">
@@ -101,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, createVNode } from 'vue';
+import {defineComponent, onMounted, ref, createVNode} from 'vue';
 import axios from 'axios';
 import {message, Modal} from 'ant-design-vue';
 import {Tool} from "../../../util/tool";
@@ -129,12 +129,12 @@ export default defineComponent({
       {
         title: '名称',
         dataIndex: 'name',
-        slots: { customRender: 'name' }
+        slots: {customRender: 'name'}
       },
       {
         title: 'Action',
         key: 'action',
-        slots: { customRender: 'action' }
+        slots: {customRender: 'action'}
       }
     ];
 
@@ -270,11 +270,29 @@ export default defineComponent({
     };
 
     /**
+     * 数据查询
+     **/
+    const handleQueryContent = () => {
+      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+      level1.value = [];
+      axios.get("/doc/find-content/" + doc.value.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          editor.txt.html(data.content)
+
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    /**
      * 编辑
      */
     const edit = (record: any) => {
       modalVisible.value = true;
       doc.value = Tool.copy(record);
+      handleQueryContent();
 
       // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
       treeSelectData.value = Tool.copy(level1.value);
