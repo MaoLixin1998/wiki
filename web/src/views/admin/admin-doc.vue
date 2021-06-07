@@ -30,7 +30,7 @@
               :defaultExpandAllRows="true"
           >
             <template #name="{ text, record }">
-              {{ record.sort }} {{ text }}
+              {{record.sort}} {{text}}
             </template>
             <template v-slot:action="{ text, record }">
               <a-space size="small">
@@ -101,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref, createVNode} from 'vue';
+import { defineComponent, onMounted, ref, createVNode } from 'vue';
 import axios from 'axios';
 import {message, Modal} from 'ant-design-vue';
 import {Tool} from "../../../util/tool";
@@ -132,12 +132,12 @@ export default defineComponent({
       {
         title: '名称',
         dataIndex: 'name',
-        slots: {customRender: 'name'}
+        slots: { customRender: 'name' }
       },
       {
         title: 'Action',
         key: 'action',
-        slots: {customRender: 'action'}
+        slots: { customRender: 'action' }
       }
     ];
 
@@ -173,9 +173,9 @@ export default defineComponent({
           level1.value = Tool.array2Tree(docs.value, 0);
           console.log("树形结构：", level1);
 
-          //父文档下拉框初始化，相当于点击新增
+          // 父文档下拉框初始化，相当于点击新增
           treeSelectData.value = Tool.copy(level1.value);
-          //为选择树添加一个“无”
+          // 为选择树添加一个"无"
           treeSelectData.value.unshift({id: 0, name: '无'});
         } else {
           message.error(data.message);
@@ -199,7 +199,8 @@ export default defineComponent({
         const data = response.data; // data = commonResp
         if (data.success) {
           // modalVisible.value = false;
-          message.success("保存成功！")
+          message.success("保存成功！");
+
           // 重新加载列表
           handleQuery();
         } else {
@@ -275,16 +276,13 @@ export default defineComponent({
     };
 
     /**
-     * 数据查询
+     * 内容查询
      **/
     const handleQueryContent = () => {
-      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-      level1.value = [];
       axios.get("/doc/find-content/" + doc.value.id).then((response) => {
         const data = response.data;
         if (data.success) {
           editor.txt.html(data.content)
-
         } else {
           message.error(data.message);
         }
@@ -295,8 +293,8 @@ export default defineComponent({
      * 编辑
      */
     const edit = (record: any) => {
-      //清空富文本框
-      editor.txt.html("")
+      // 清空富文本框
+      editor.txt.html("");
       modalVisible.value = true;
       doc.value = Tool.copy(record);
       handleQueryContent();
@@ -313,8 +311,8 @@ export default defineComponent({
      * 新增
      */
     const add = () => {
-      //清空富文本框
-      editor.txt.html("")
+      // 清空富文本框
+      editor.txt.html("");
       modalVisible.value = true;
       doc.value = {
         ebookId: route.query.ebookId
