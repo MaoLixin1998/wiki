@@ -1,6 +1,7 @@
 package com.lixin.wiki.controller;
 
 import com.lixin.wiki.req.UserQueryReq;
+import com.lixin.wiki.req.UserResetPasswordReq;
 import com.lixin.wiki.req.UserSaveReq;
 import com.lixin.wiki.resp.CommonResp;
 import com.lixin.wiki.resp.PageResp;
@@ -29,6 +30,14 @@ public class UserController {
         return resp;
     }
 
+
+    @PostMapping("/reset-password")
+    public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req){
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp resp = new CommonResp<>();
+        userService.resetPassword(req);
+        return resp;
+    }
 
     @PostMapping("/save")
     public CommonResp save(@Valid @RequestBody UserSaveReq req){

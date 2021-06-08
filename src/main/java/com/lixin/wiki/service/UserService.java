@@ -8,6 +8,7 @@ import com.lixin.wiki.exception.BusinessException;
 import com.lixin.wiki.exception.BusinessExceptionCode;
 import com.lixin.wiki.mapper.UserMapper;
 import com.lixin.wiki.req.UserQueryReq;
+import com.lixin.wiki.req.UserResetPasswordReq;
 import com.lixin.wiki.req.UserSaveReq;
 import com.lixin.wiki.resp.PageResp;
 import com.lixin.wiki.resp.UserQueryResp;
@@ -111,4 +112,15 @@ public class UserService {
             return userList.get(0);
         }
     }
+
+    /**
+     * 保存
+     *
+     * @param req
+     */
+    public void resetPassword(UserResetPasswordReq req) {
+        User user = CopyUtil.copy(req, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
+    }
+
 }
