@@ -408,8 +408,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-img {
-  width: 50px;
-  height: 50px;
-}
+  img {
+    width: 50px;
+    height: 50px;
+  }
 </style>

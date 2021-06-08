@@ -21,6 +21,7 @@ import com.lixin.wiki.util.SnowFlake;
 import com.lixin.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -51,7 +52,8 @@ public class DocService {
     private RedisUtil redisUtil;
 
     @Resource
-    private WebSocketServer webSocketServer;
+    private WsService wsService;
+
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
 
@@ -156,10 +158,9 @@ public class DocService {
         } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
-
         //推送消息
         Doc docDB = docMapper.selectByPrimaryKey(id);
-        webSocketServer.sendInfo("【" + docDB.getName() + "】被点赞！");
+        wsService.sendInfo("【" + docDB.getName() + "】被点赞！");
     }
 
     public void updateEbookInfo() {
