@@ -24,13 +24,11 @@
             <a-divider style="height: 2px; background-color: #9999cc"/>
           </div>
           <div class="wangeditor" :innerHTML="html"></div>
-          <dic class="vote-div">
+          <div class="vote-div">
             <a-button type="primary" shape="round" :size="'large'" @click="vote">
-              <template #icon>
-                <LikeOutlined/>&nbsp;点赞：{{ doc.voteCount }}
-              </template>
+              <template #icon><LikeOutlined /> &nbsp;点赞：{{doc.voteCount}} </template>
             </a-button>
-          </dic>
+          </div>
         </a-col>
       </a-row>
     </a-layout-content>

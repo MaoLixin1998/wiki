@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.lixin.wiki.domain.Content;
 import com.lixin.wiki.domain.Doc;
 import com.lixin.wiki.domain.DocExample;
+import com.lixin.wiki.exception.BusinessException;
+import com.lixin.wiki.exception.BusinessExceptionCode;
 import com.lixin.wiki.mapper.ContentMapper;
 import com.lixin.wiki.mapper.DocMapper;
 import com.lixin.wiki.mapper.DocMapperCust;
@@ -13,6 +15,8 @@ import com.lixin.wiki.req.DocSaveReq;
 import com.lixin.wiki.resp.DocQueryResp;
 import com.lixin.wiki.resp.PageResp;
 import com.lixin.wiki.util.CopyUtil;
+import com.lixin.wiki.util.RedisUtil;
+import com.lixin.wiki.util.RequestContext;
 import com.lixin.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +45,9 @@ public class DocService {
 
     @Resource
     private SnowFlake snowFlake;
+
+    @Resource
+    private RedisUtil redisUtil;
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
 
@@ -137,6 +144,13 @@ public class DocService {
     }
 
     public void vote(Long id) {
-        docMapperCust.increaseVoteCount(id);
+//        docMapperCust.increaseVoteCount(id);
+        //远程IP+doc.id作为key,24小时内不能重复
+        String key = RequestContext.getRemoteAddr();
+        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + key, 3600 * 24)) {
+            docMapperCust.increaseVoteCount(id);
+        }else {
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
     }
 }
