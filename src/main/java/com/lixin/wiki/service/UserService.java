@@ -7,10 +7,12 @@ import com.lixin.wiki.domain.UserExample;
 import com.lixin.wiki.exception.BusinessException;
 import com.lixin.wiki.exception.BusinessExceptionCode;
 import com.lixin.wiki.mapper.UserMapper;
+import com.lixin.wiki.req.UserLoginReq;
 import com.lixin.wiki.req.UserQueryReq;
 import com.lixin.wiki.req.UserResetPasswordReq;
 import com.lixin.wiki.req.UserSaveReq;
 import com.lixin.wiki.resp.PageResp;
+import com.lixin.wiki.resp.UserLoginResp;
 import com.lixin.wiki.resp.UserQueryResp;
 import com.lixin.wiki.util.CopyUtil;
 import com.lixin.wiki.util.SnowFlake;
@@ -84,7 +86,7 @@ public class UserService {
                 //新增
                 user.setId(snowFlake.nextId());
                 userMapper.insert(user);
-            }else {
+            } else {
                 //用户名已存在
                 throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
 
@@ -106,9 +108,9 @@ public class UserService {
         UserExample.Criteria criteria = userExample.createCriteria();
         criteria.andNameEqualTo(LoginName);
         List<User> userList = userMapper.selectByExample(userExample);
-        if (CollectionUtils.isEmpty(userList)){
+        if (CollectionUtils.isEmpty(userList)) {
             return null;
-        }else {
+        } else {
             return userList.get(0);
         }
     }
@@ -123,4 +125,28 @@ public class UserService {
         userMapper.updateByPrimaryKeySelective(user);
     }
 
+    /**
+     * 登录
+     *
+     * @param req
+     */
+    public UserLoginResp login(UserLoginReq req) {
+        User userDB = selectByLoginName(req.getLoginName());
+        if (ObjectUtils.isEmpty(userDB)) {
+            //用户名不存在
+            LOG.info("用户名不存在，{}",req.getLoginName());
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+        } else {
+            if (userDB.getPassword().equals(req.getPassword())) {
+                //登录成功
+                UserLoginResp userLoginResp = CopyUtil.copy(userDB,UserLoginResp.class);
+                return userLoginResp;
+            } else {
+                //密码不对
+                LOG.info("密码不正确，输入密码：{}，数据库密码：{}",req.getPassword(),userDB.getPassword());
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+            }
+        }
+
+    }
 }
