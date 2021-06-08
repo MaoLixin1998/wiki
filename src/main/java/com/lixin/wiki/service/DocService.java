@@ -7,6 +7,7 @@ import com.lixin.wiki.domain.Doc;
 import com.lixin.wiki.domain.DocExample;
 import com.lixin.wiki.mapper.ContentMapper;
 import com.lixin.wiki.mapper.DocMapper;
+import com.lixin.wiki.mapper.DocMapperCust;
 import com.lixin.wiki.req.DocQueryReq;
 import com.lixin.wiki.req.DocSaveReq;
 import com.lixin.wiki.resp.DocQueryResp;
@@ -31,6 +32,9 @@ public class DocService {
 
     @Resource
     private DocMapper docMapper;
+
+    @Resource
+    private DocMapperCust docMapperCust;
 
     @Resource
     private ContentMapper contentMapper;
@@ -94,6 +98,8 @@ public class DocService {
         if (ObjectUtils.isEmpty(req.getId())) {
             //新增
             doc.setId(snowFlake.nextId());
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
             content.setId(doc.getId());
             contentMapper.insert(content);
@@ -120,6 +126,9 @@ public class DocService {
 
     public String findContent(Long id) {
         Content content = contentMapper.selectByPrimaryKey(id);
+
+        //文档阅读数+1
+        docMapperCust.increaseViewCount(id);
         if (ObjectUtils.isEmpty(content)) {
             return "";
         } else {
