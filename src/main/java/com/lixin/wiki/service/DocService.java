@@ -5,14 +5,20 @@ import com.github.pagehelper.PageInfo;
 import com.lixin.wiki.domain.Content;
 import com.lixin.wiki.domain.Doc;
 import com.lixin.wiki.domain.DocExample;
+import com.lixin.wiki.exception.BusinessException;
+import com.lixin.wiki.exception.BusinessExceptionCode;
 import com.lixin.wiki.mapper.ContentMapper;
 import com.lixin.wiki.mapper.DocMapper;
+import com.lixin.wiki.mapper.DocMapperCust;
 import com.lixin.wiki.req.DocQueryReq;
 import com.lixin.wiki.req.DocSaveReq;
 import com.lixin.wiki.resp.DocQueryResp;
 import com.lixin.wiki.resp.PageResp;
 import com.lixin.wiki.util.CopyUtil;
+import com.lixin.wiki.util.RedisUtil;
+import com.lixin.wiki.util.RequestContext;
 import com.lixin.wiki.util.SnowFlake;
+import com.lixin.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,10 +39,19 @@ public class DocService {
     private DocMapper docMapper;
 
     @Resource
+    private DocMapperCust docMapperCust;
+
+    @Resource
     private ContentMapper contentMapper;
 
     @Resource
     private SnowFlake snowFlake;
+
+    @Resource
+    private RedisUtil redisUtil;
+
+    @Resource
+    private WebSocketServer webSocketServer;
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
 
@@ -94,6 +109,8 @@ public class DocService {
         if (ObjectUtils.isEmpty(req.getId())) {
             //新增
             doc.setId(snowFlake.nextId());
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
             content.setId(doc.getId());
             contentMapper.insert(content);
@@ -120,10 +137,32 @@ public class DocService {
 
     public String findContent(Long id) {
         Content content = contentMapper.selectByPrimaryKey(id);
+
+        //文档阅读数+1
+        docMapperCust.increaseViewCount(id);
         if (ObjectUtils.isEmpty(content)) {
             return "";
         } else {
             return content.getContent();
         }
+    }
+
+    public void vote(Long id) {
+//        docMapperCust.increaseVoteCount(id);
+        //远程IP+doc.id作为key,24小时内不能重复
+        String key = RequestContext.getRemoteAddr();
+        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + key, 3600 * 24)) {
+            docMapperCust.increaseVoteCount(id);
+        } else {
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
+
+        //推送消息
+        Doc docDB = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("【" + docDB.getName() + "】被点赞！");
+    }
+
+    public void updateEbookInfo() {
+        docMapperCust.updateEbookInfo();
     }
 }
