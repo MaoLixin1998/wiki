@@ -18,6 +18,7 @@ import com.lixin.wiki.util.CopyUtil;
 import com.lixin.wiki.util.RedisUtil;
 import com.lixin.wiki.util.RequestContext;
 import com.lixin.wiki.util.SnowFlake;
+import com.lixin.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,9 @@ public class DocService {
 
     @Resource
     private RedisUtil redisUtil;
+
+    @Resource
+    private WebSocketServer webSocketServer;
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
 
@@ -149,9 +153,13 @@ public class DocService {
         String key = RequestContext.getRemoteAddr();
         if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + key, 3600 * 24)) {
             docMapperCust.increaseVoteCount(id);
-        }else {
+        } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
+
+        //推送消息
+        Doc docDB = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("【" + docDB.getName() + "】被点赞！");
     }
 
     public void updateEbookInfo() {
