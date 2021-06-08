@@ -1,6 +1,6 @@
 <template>
   <a-layout-header class="header">
-    <div class="logo" />
+    <div class="logo"/>
     <a-menu
         theme="dark"
         mode="horizontal"
@@ -21,7 +21,10 @@
       <a-menu-item key="/about">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
-      <a class="login-menu" @click="showLoginModal">
+      <a class="login-menu" v-show="user.id">
+        <span>您好：{{ user.name }}</span>
+      </a>
+      <a class="login-menu" v-show="!user.id" @click="showLoginModal">
         <span>登录</span>
       </a>
     </a-menu>
@@ -34,10 +37,10 @@
     >
       <a-form :model="loginUser" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
         <a-form-item label="登录名">
-          <a-input v-model:value="loginUser.loginName" />
+          <a-input v-model:value="loginUser.loginName"/>
         </a-form-item>
         <a-form-item label="密码">
-          <a-input v-model:value="loginUser.password" type="password" />
+          <a-input v-model:value="loginUser.password" type="password"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -54,10 +57,15 @@ declare let KEY: any;
 
 export default defineComponent({
   name: 'the-header',
-  setup () {
+  setup() {
+    //登陆后保存
+    const user = ref();
+    user.value = {};
+
+    //用来登录
     const loginUser = ref({
-      loginName: "test",
-      password: "test"
+      loginName: "test1",
+      password: "test123"
     });
     const loginModalVisible = ref(false);
     const loginModalLoading = ref(false);
@@ -68,16 +76,16 @@ export default defineComponent({
     // 登录
     const login = () => {
       console.log("开始登录")
-      loginModalLoading.value =true;
+      loginModalLoading.value = true;
       loginUser.value.password = hexMd5(loginUser.value.password + KEY);
-      axios.post('/user/login',loginUser.value).then((response) => {
-        loginModalLoading.value =false;
+      axios.post('/user/login', loginUser.value).then((response) => {
+        loginModalLoading.value = false;
         const data = response.data;
-        if (data.success){
+        if (data.success) {
           loginModalVisible.value = false;
           message.success("登陆成功！");
-
-        }else {
+          user.value = data.content;
+        } else {
           message.success(data.message);
         }
       });
@@ -88,7 +96,8 @@ export default defineComponent({
       loginModalLoading,
       showLoginModal,
       loginUser,
-      login
+      login,
+      user
     }
   }
 });
