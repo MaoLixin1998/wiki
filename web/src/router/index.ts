@@ -32,6 +32,11 @@ const routes: Array<RouteRecordRaw> = [
         component: AdminEbook
     },
     {
+        path: '/admin/user',
+        name: 'AdminUser',
+        component: AdminEbook
+    },
+    {
         path: '/admin/doc',
         name: 'AdminDoc',
         component: AdminDoc
