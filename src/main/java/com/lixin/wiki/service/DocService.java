@@ -18,7 +18,6 @@ import com.lixin.wiki.util.CopyUtil;
 import com.lixin.wiki.util.RedisUtil;
 import com.lixin.wiki.util.RequestContext;
 import com.lixin.wiki.util.SnowFlake;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -55,8 +54,8 @@ public class DocService {
     @Resource
     private WsService wsService;
 
-    @Resource
-    private RocketMQTemplate rocketMQTemplate;
+//    @Resource
+//    private RocketMQTemplate rocketMQTemplate;
 
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
@@ -166,8 +165,8 @@ public class DocService {
         //推送消息
         Doc docDB = docMapper.selectByPrimaryKey(id);
         String logId = MDC.get("LOG_ID");
-//        wsService.sendInfo("【" + docDB.getName() + "】被点赞！",logId);
-        rocketMQTemplate.convertAndSend("VOTE_TOPIC","【" + docDB.getName() + "】被点赞！");
+        wsService.sendInfo("【" + docDB.getName() + "】被点赞！",logId);
+//        rocketMQTemplate.convertAndSend("VOTE_TOPIC","【" + docDB.getName() + "】被点赞！");
     }
 
     public void updateEbookInfo() {
