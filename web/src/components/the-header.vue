@@ -1,6 +1,6 @@
 <template>
   <a-layout-header class="header">
-    <div class="logo" />
+    <div class="logo" >利鑫知识库</div>
     <a-menu
         theme="dark"
         mode="horizontal"
@@ -130,6 +130,14 @@ export default defineComponent({
 </script>
 
 <style>
+.logo {
+  width: 120px;
+  height: 31px;
+  float: left;
+  color: #d0e5f2;
+  font-size: 18px;
+}
+
 .login-menu {
   float: right;
   color: white;
