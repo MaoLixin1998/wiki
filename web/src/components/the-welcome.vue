@@ -128,12 +128,14 @@ export default defineComponent({
     const getStatistic = () => {
       axios.get('/ebook-snapshot/get-statistic').then((response) => {
         const data = response.data;
+
         if (data.success) {
           const statisticResp = data.content;
-          statistic.value.viewCount = statisticResp[1].viewCount;
-          statistic.value.voteCount = statisticResp[1].voteCount;
-          statistic.value.todayViewCount = statisticResp[1].viewIncrease;
-          statistic.value.todayVoteCount = statisticResp[1].voteIncrease;
+          console.log("响应数据",statisticResp[0])
+          statistic.value.viewCount = statisticResp[0].viewCount;
+          statistic.value.voteCount = statisticResp[0].voteCount;
+          statistic.value.todayViewCount = statisticResp[0].viewIncrease;
+          statistic.value.todayVoteCount = statisticResp[0].voteIncrease;
 
           // 按分钟计算当前时间点，占一天的百分比
           const now = new Date();
